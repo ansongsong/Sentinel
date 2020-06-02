@@ -20,6 +20,7 @@ import com.alibaba.csp.sentinel.adapter.spring.webmvc.config.SentinelWebMvcTotal
 import javax.servlet.http.HttpServletRequest;
 
 /**
+ * 针对全局 URL 进行流量控制。简单来说，所有 URL 合计流量，全局统一进行控制。
  * The web interceptor for all requests, which will unify all URL as
  * a single resource name (configured in {@link SentinelWebMvcTotalConfig}).
  *

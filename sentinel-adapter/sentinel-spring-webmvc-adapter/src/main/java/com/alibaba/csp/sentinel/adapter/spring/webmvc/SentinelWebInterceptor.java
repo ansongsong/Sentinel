@@ -25,7 +25,7 @@ import org.springframework.web.servlet.HandlerMapping;
 
 /**
  * Spring Web MVC interceptor that integrates with Sentinel.
- *
+ * 针对每个 URL 进行流量控制。
  * @author kaizi2009
  * @since 1.7.1
  */
@@ -60,6 +60,7 @@ public class SentinelWebInterceptor extends AbstractSentinelInterceptor {
             resourceName = urlCleaner.clean(resourceName);
         }
         // Add method specification if necessary
+        // 将 URL + Method 作为一个资源，进行流量控制
         if (StringUtil.isNotEmpty(resourceName) && config.isHttpMethodSpecify()) {
             resourceName = request.getMethod().toUpperCase() + ":" + resourceName;
         }

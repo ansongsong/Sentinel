@@ -18,6 +18,7 @@ package com.alibaba.csp.sentinel.adapter.spring.webmvc.config;
 import com.alibaba.csp.sentinel.adapter.spring.webmvc.callback.UrlCleaner;
 
 /**
+ * 用于作为 SentinelWebInterceptor 拦截器的配置。
  * @author kaizi2009
  * @since 1.7.1
  */
