@@ -55,9 +55,11 @@ public class StatisticSlot extends AbstractLinkedProcessorSlot<DefaultNode> {
     public void entry(Context context, ResourceWrapper resourceWrapper, DefaultNode node, int count,
                       boolean prioritized, Object... args) throws Throwable {
         try {
+            // 触发下一个Slot的entry方法
             // Do some checking.
             fireEntry(context, resourceWrapper, node, count, prioritized, args);
-
+            // 如果能通过SlotChain中后面的Slot的entry方法，说明没有被限流或降级
+            // 统计信息
             // Request passed, add thread count and pass count.
             node.increaseThreadNum();
             node.addPassRequest(count);

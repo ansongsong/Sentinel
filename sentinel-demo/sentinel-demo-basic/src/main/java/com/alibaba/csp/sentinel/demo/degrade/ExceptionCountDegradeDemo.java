@@ -76,6 +76,7 @@ public class ExceptionCountDegradeDemo {
                                 // biz code raise an exception.
                                 throw new RuntimeException("throw runtime ");
                             }
+
                         } catch (BlockException e) {
                             block.addAndGet(1);
                         } catch (Throwable t) {

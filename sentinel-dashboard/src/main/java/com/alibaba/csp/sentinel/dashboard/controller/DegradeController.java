@@ -17,11 +17,14 @@ package com.alibaba.csp.sentinel.dashboard.controller;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import com.alibaba.csp.sentinel.dashboard.auth.AuthAction;
 import com.alibaba.csp.sentinel.dashboard.client.SentinelApiClient;
 import com.alibaba.csp.sentinel.dashboard.discovery.MachineInfo;
 import com.alibaba.csp.sentinel.dashboard.auth.AuthService.PrivilegeType;
+import com.alibaba.csp.sentinel.dashboard.rule.apollo.degrade.DegradeRuleApolloProvider;
+import com.alibaba.csp.sentinel.dashboard.rule.apollo.degrade.DegradeRuleApolloPublisher;
 import com.alibaba.csp.sentinel.slots.block.RuleConstant;
 import com.alibaba.csp.sentinel.util.StringUtil;
 
@@ -48,9 +51,12 @@ public class DegradeController {
 
     @Autowired
     private InMemDegradeRuleStore repository;
+//    @Autowired
+//    private SentinelApiClient sentinelApiClient;
     @Autowired
-    private SentinelApiClient sentinelApiClient;
-
+    private DegradeRuleApolloProvider degradeRuleApolloProvider;
+    @Autowired
+    private DegradeRuleApolloPublisher degradeRuleApolloPublisher;
     @ResponseBody
     @RequestMapping("/rules.json")
     @AuthAction(PrivilegeType.READ_RULE)
@@ -66,7 +72,8 @@ public class DegradeController {
             return Result.ofFail(-1, "port can't be null");
         }
         try {
-            List<DegradeRuleEntity> rules = sentinelApiClient.fetchDegradeRuleOfMachine(app, ip, port);
+//            List<DegradeRuleEntity> rules = sentinelApiClient.fetchDegradeRuleOfMachine(app, ip, port);
+            List<DegradeRuleEntity> rules = degradeRuleApolloProvider.getRules(app);
             rules = repository.saveAll(rules);
             return Result.ofSuccess(rules);
         } catch (Throwable throwable) {
@@ -209,6 +216,12 @@ public class DegradeController {
 
     private boolean publishRules(String app, String ip, Integer port) {
         List<DegradeRuleEntity> rules = repository.findAllByMachine(MachineInfo.of(app, ip, port));
-        return sentinelApiClient.setDegradeRuleOfMachine(app, ip, port, rules);
+        try{
+//        return sentinelApiClient.setDegradeRuleOfMachine(app, ip, port, rules);
+            degradeRuleApolloPublisher.publish(app,rules);
+        }catch (Exception e){
+            logger.error("DegradeController.publishRules publishRules error,app:{},rules:{}",app,rules);
+        }
+        return true;
     }
 }

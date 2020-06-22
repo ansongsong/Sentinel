@@ -23,10 +23,12 @@ import com.alibaba.csp.sentinel.slots.block.AbstractRule;
 import com.alibaba.csp.sentinel.slots.block.RuleConstant;
 import com.alibaba.csp.sentinel.slots.clusterbuilder.ClusterBuilderSlot;
 
+import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -70,7 +72,7 @@ public class DegradeRule extends AbstractRule {
      */
     private double count;
 
-    /**
+    /**  时间窗口
      * Degrade recover timeout (in seconds) when degradation occurs.
      */
     private int timeWindow;
@@ -82,7 +84,7 @@ public class DegradeRule extends AbstractRule {
 
     /**
      * Minimum number of consecutive slow requests that can trigger RT circuit breaking.
-     *
+     * 最少多少个 请求，达到 降级的响应时间，就降级
      * @since 1.7.0
      */
     private int rtSlowRequestAmount = RuleConstant.DEGRADE_DEFAULT_SLOW_REQUEST_AMOUNT;
@@ -179,7 +181,10 @@ public class DegradeRule extends AbstractRule {
     // Internal implementation (will be deprecated and moved outside).
 
     private AtomicLong passCount = new AtomicLong(0);
+    // 是否降级  false： 没有降级    true: 正在降级
     private final AtomicBoolean cut = new AtomicBoolean(false);
+
+    AtomicInteger flag = new AtomicInteger(0);
 
     @Override
     public boolean passCheck(Context context, DefaultNode node, int acquireCount, Object... args) {
@@ -195,10 +200,11 @@ public class DegradeRule extends AbstractRule {
         if (grade == RuleConstant.DEGRADE_GRADE_RT) {
             double rt = clusterNode.avgRt();
             if (rt < this.count) {
+//                System.out.println(Thread.currentThread().getName()+":YYYYYYYYY:"+flag.incrementAndGet());
                 passCount.set(0);
                 return true;
             }
-
+//            System.out.println(Thread.currentThread().getName()+":xxxxxxxxxx:"+flag.incrementAndGet()+":::::"+new Date().getTime());
             // Sentinel will degrade the service only if count exceeds.
             if (passCount.incrementAndGet() < rtSlowRequestAmount) {
                 return true;
@@ -228,7 +234,7 @@ public class DegradeRule extends AbstractRule {
                 return true;
             }
         }
-
+        // 达到降级条件，执行定时任务，延迟 时间窗口的秒数，执行任务
         if (cut.compareAndSet(false, true)) {
             ResetTask resetTask = new ResetTask(this);
             pool.schedule(resetTask, timeWindow, TimeUnit.SECONDS);
@@ -248,6 +254,7 @@ public class DegradeRule extends AbstractRule {
         @Override
         public void run() {
             rule.passCount.set(0);
+            // 修改为 不是降级状态
             rule.cut.set(false);
         }
     }

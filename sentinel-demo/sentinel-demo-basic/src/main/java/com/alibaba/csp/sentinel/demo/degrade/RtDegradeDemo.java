@@ -16,6 +16,7 @@
 package com.alibaba.csp.sentinel.demo.degrade;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -83,28 +84,31 @@ public class RtDegradeDemo {
     private static AtomicInteger total = new AtomicInteger();
 
     private static volatile boolean stop = false;
+
+    private static volatile boolean kk = false;
+
     private static final int threadCount = 100;
     private static int seconds = 60 + 40;
 
     public static void main(String[] args) throws Exception {
-
         tick();
         initDegradeRule();
-
         for (int i = 0; i < threadCount; i++) {
+
+            TimeUnit.MILLISECONDS.sleep(50);
+            kk = true;
             Thread entryThread = new Thread(new Runnable() {
 
                 @Override
                 public void run() {
-                    while (true) {
+//                    while (true) {
                         Entry entry = null;
                         try {
-                            TimeUnit.MILLISECONDS.sleep(5);
                             entry = SphU.entry(KEY);
                             // token acquired
                             pass.incrementAndGet();
                             // sleep 600 ms, as rt
-                            TimeUnit.MILLISECONDS.sleep(600);
+                            TimeUnit.MILLISECONDS.sleep(2000);
                         } catch (Exception e) {
                             block.incrementAndGet();
                         } finally {
@@ -114,7 +118,7 @@ public class RtDegradeDemo {
                             }
                         }
                     }
-                }
+//                }
 
             });
             entryThread.setName("working-thread");
@@ -149,7 +153,9 @@ public class RtDegradeDemo {
             long oldTotal = 0;
             long oldPass = 0;
             long oldBlock = 0;
+            while (!kk){
 
+            }
             while (!stop) {
                 try {
                     TimeUnit.SECONDS.sleep(1);

@@ -247,7 +247,7 @@ public class StatisticNode implements Node {
         rollingCounterInSecond.addPass(count);
         rollingCounterInMinute.addPass(count);
     }
-
+    // 添加 响应时间，和当前 成功的数量
     @Override
     public void addRtAndSuccess(long rt, int successCount) {
         rollingCounterInSecond.addSuccess(successCount);

@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * as collecting statistics, not for fine-grained synchronization
  * control.  Under low update contention, the two classes have similar
  * characteristics. But under high contention, expected throughput of
+ *
  * this class is significantly higher, at the expense of higher space
  * consumption.
  *
@@ -34,7 +35,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * instances are expected to be mutated, and so are not useful as
  * collection keys.
  *
- * <p><em>jsr166e note: This class is targeted to be placed in
+ * <p><em>jsr166e note: This class is targeted to b e placed in
  * java.util.concurrent.atomic<em>
  *
  * @author Doug Lea

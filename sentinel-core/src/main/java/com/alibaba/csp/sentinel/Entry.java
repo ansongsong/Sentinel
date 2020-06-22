@@ -53,8 +53,9 @@ import com.alibaba.csp.sentinel.context.Context;
 public abstract class Entry implements AutoCloseable {
 
     private static final Object[] OBJECTS0 = new Object[0];
-
+    // 创建时间，其中一个用途是计算 响应时间 rt
     private final long createTimestamp;
+    //完成时间，通过 StatisticSlot.exit() 设置完成时间 响应时间  =  completeTimestamp-createTimestamp
     private long completeTimestamp;
 
     private Node curNode;

@@ -69,8 +69,15 @@ public final class DegradeRuleManager {
         }
     }
 
+    public static boolean hasConfig(String resource) {
+        if (resource == null) {
+            return false;
+        }
+        return degradeRules.containsKey(resource);
+    }
+
     public static void checkDegrade(ResourceWrapper resource, Context context, DefaultNode node, int count)
-        throws BlockException {
+            throws BlockException {
 
         Set<DegradeRule> rules = degradeRules.get(resource.getName());
         if (rules == null) {
@@ -82,13 +89,6 @@ public final class DegradeRuleManager {
                 throw new DegradeException(rule.getLimitApp(), rule);
             }
         }
-    }
-
-    public static boolean hasConfig(String resource) {
-        if (resource == null) {
-            return false;
-        }
-        return degradeRules.containsKey(resource);
     }
 
     /**

@@ -49,10 +49,13 @@ public final class ConfigUtil {
     public static Properties loadProperties(String fileName) {
         if (StringUtil.isNotBlank(fileName)) {
             if (absolutePathStart(fileName)) {
+                // 绝对路径
                 return loadPropertiesFromAbsoluteFile(fileName);
             } else if (fileName.startsWith(CLASSPATH_FILE_FLAG)) {
+                // 类路径
                 return loadPropertiesFromClasspathFile(fileName);
             } else {
+                // 相对路径
                 return loadPropertiesFromRelativeFile(fileName);
             }
         } else {
@@ -90,7 +93,11 @@ public final class ConfigUtil {
         return false;
     }
 
-
+    /**
+     * 从文件中加载配置文件到Properteis中
+     * @param fileName
+     * @return
+     */
     private static Properties loadPropertiesFromClasspathFile(String fileName) {
         fileName = fileName.substring(CLASSPATH_FILE_FLAG.length()).trim();
 

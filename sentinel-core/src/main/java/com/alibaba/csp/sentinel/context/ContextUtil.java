@@ -118,6 +118,7 @@ public class ContextUtil {
     }
 
     protected static Context trueEnter(String name, String origin) {
+        // 先从ThreadLocal中获取
         Context context = contextHolder.get();
         if (context == null) {
             Map<String, DefaultNode> localCacheNameMap = contextNameNodeMap;
@@ -135,6 +136,8 @@ public class ContextUtil {
                                 setNullContext();
                                 return NULL_CONTEXT;
                             } else {
+                                // 省略部分代码
+                                // 创建一个新的入口节点
                                 node = new EntranceNode(new StringResourceWrapper(name, EntryType.IN), null);
                                 // Add entrance node.
                                 Constants.ROOT.addChild(node);
