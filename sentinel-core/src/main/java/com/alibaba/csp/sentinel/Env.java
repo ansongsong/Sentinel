@@ -17,7 +17,7 @@ package com.alibaba.csp.sentinel;
 
 import com.alibaba.csp.sentinel.init.InitExecutor;
 
-/**
+/** 测试 git
  * Sentinel Env. This class will trigger all initialization for Sentinel.
  *
  * <p>
