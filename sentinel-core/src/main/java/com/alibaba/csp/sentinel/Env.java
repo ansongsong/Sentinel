@@ -18,6 +18,7 @@ package com.alibaba.csp.sentinel;
 import com.alibaba.csp.sentinel.init.InitExecutor;
 
 /**
+ * ansongsong1
  * Sentinel Env. This class will trigger all initialization for Sentinel.
  *
  * <p>
